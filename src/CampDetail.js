@@ -109,7 +109,7 @@ function CampDetail({ camp, onBack }) {
         </button>
       )}
       <CSSTransition in={!!camp} timeout={300} classNames="alert" unmountOnExit>
-        <div className="h-screen">
+        <div>
           <div className="text-center">
             <img
               src={c.metadata && c.metadata.photo_url}
@@ -130,9 +130,9 @@ function CampDetail({ camp, onBack }) {
       </CSSTransition>
       {camp && (
         <button
-          className="fixed border shadow p-4 rounded bg-green-500 text-white"
+          className="fixed border shadow p-4 rounded bg-green-500 text-white mt-16"
           style={{
-            bottom: 12,
+            bottom: 8,
             left: 8,
             right: 8,
             transition: "opacity",
