@@ -51,7 +51,7 @@ function App() {
         </nav>
       </header>
       {!showDetail && (
-        <div className="p-8 mt-16">
+        <div className="p-2 mt-16">
           {campaignList.map((c, i) => (
             <div
               className={`border shadow rounded-lg overflow-hidden ${
