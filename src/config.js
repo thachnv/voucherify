@@ -7,3 +7,4 @@ export const CREATE_VOUCHER = "/v1/campaigns/{camp_name}/vouchers";
 export const GET_VOUCHER_LIST = "/v1/vouchers";
 export const CREATE_CUSTOMER = "/v1/customers";
 export const CREATE_PUBLLICATION = "/v1/publications";
+export const REDEEM = "/v1/vouchers/{code}/redemption";

@@ -7,13 +7,13 @@ import "tailwindcss/dist/tailwind.css";
 import carousellLogo from "./logo.png";
 import CampDetail from "./CampDetail";
 import { APP_ID, APP_TOKEN, BASE_URL, GET_CAMPAIGN_LIST } from "./config";
-import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
+import { Switch, Route, Link, HashRouter as Router } from "react-router-dom";
+import MerchantPage from "./MerchantPage";
 
 const processCampainData = camp => {
   try {
     camp.metadata.photo_urls = JSON.parse(camp.metadata.photo_urls);
   } catch (e) {
-    console.log(e);
     camp.metadata.photo_urls = [];
   }
   return camp;
@@ -21,8 +21,6 @@ const processCampainData = camp => {
 
 function App() {
   const [campaignList, setCampaignList] = React.useState(null);
-  const [showDetail, setShowDetail] = React.useState(false);
-  const [selectedCamp, setSelectedCamp] = React.useState(null);
 
   React.useEffect(() => {
     fetch(BASE_URL + GET_CAMPAIGN_LIST, {
@@ -40,11 +38,6 @@ function App() {
         setCampaignList(data.campaigns.map(c => processCampainData(c)))
       );
   }, []);
-
-  const onBack = () => {
-    setShowDetail(false);
-    setSelectedCamp(null);
-  };
 
   if (!campaignList) {
     return (
@@ -66,11 +59,11 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/">
-            <div className="p-2 mt-16">
+            <div className="p-2 mt-16 mb-16">
               {campaignList.map((c, i) => (
-                <Link to={`/campaign/${encodeURI(c.name)}`}>
+                <Link to={`/campaign/${encodeURI(c.name)}`} key={c.id}>
                   <div
-                    className={`border-2 shadow rounded-lg overflow-hidden ${
+                    className={`border-2 shadow rounded-lg overflow-hidden text-black ${
                       i === 0 ? "mt-0" : "mt-2"
                     }`}
                   >
@@ -101,6 +94,9 @@ function App() {
           </Route>
           <Route path="/campaign/:name">
             <CampDetail />
+          </Route>
+          <Route path="/merchant">
+            <MerchantPage />
           </Route>
         </Switch>
       </Router>
