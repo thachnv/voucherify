@@ -4,6 +4,7 @@ import "tailwindcss/dist/base.css";
 import "tailwindcss/dist/components.css";
 import "tailwindcss/dist/utilities.css";
 import "tailwindcss/dist/tailwind.css";
+import carousellLogo from "./logo.png";
 import CampDetail from "./CampDetail";
 import { APP_ID, APP_TOKEN, BASE_URL, GET_CAMPAIGN_LIST } from "./config";
 
@@ -42,12 +43,26 @@ function App() {
 
   return (
     <div>
+      <header data-reactid="3">
+        <nav className="fixed top-0 left-0 right-0 h-16 border-b p-4 index z-50 bg-white">
+          <a href="http://carousell.com">
+            <img src={carousellLogo} alt="logo" className="h-full" />
+          </a>
+        </nav>
+      </header>
       {!showDetail && (
-        <div className="p-4">
-          {campaignList.map(c => (
-            <div className="ml-4 mt-8 border shadow rounded-lg overflow-hidden">
+        <div className="p-8 mt-16">
+          {campaignList.map((c, i) => (
+            <div
+              className={`border shadow rounded-lg overflow-hidden ${
+                i === 0 ? "mt-0" : "mt-8"
+              }`}
+            >
               <div className="text-center">
-                <div className="img-wrapper overflow-hidden" style={{ maxHeight: 160 }}>
+                <div
+                  className="img-wrapper overflow-hidden"
+                  style={{ maxHeight: 160 }}
+                >
                   <img
                     onClick={() => {
                       setShowDetail(!showDetail);
@@ -71,7 +86,9 @@ function App() {
           ))}
         </div>
       )}
-      <CampDetail camp={selectedCamp} onBack={onBack} />
+      <div className="mt-16">
+        <CampDetail camp={selectedCamp} onBack={onBack} />
+      </div>
     </div>
   );
 }
