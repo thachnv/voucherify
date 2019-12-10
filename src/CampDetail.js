@@ -166,7 +166,7 @@ function CampDetail({ camp, onBack }) {
           )}
         </button>
       )}
-      {code && (
+      {camp && code && (
         <div
           className="fixed text-center"
           style={{
