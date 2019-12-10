@@ -6,6 +6,9 @@ import Spin from "antd/lib/spin";
 import "antd/lib/spin/style/css";
 import Icon from "antd/lib/icon";
 import "antd/lib/icon/style/css";
+import Carousel from "antd/lib/carousel";
+import "antd/lib/carousel/style/css";
+
 import {
   APP_ID,
   APP_TOKEN,
@@ -15,17 +18,6 @@ import {
 } from "./config";
 import uuid from "uuid";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
-
-const v = {
-  category: "New voucher",
-  metadata: {
-    locale: "de-en"
-  },
-  additional_info: "Test voucher",
-  redemption: {
-    quantity: 1
-  }
-};
 
 function CampDetail({ camp, onBack }) {
   const [gettingCode, setGettingCode] = React.useState(false);
@@ -63,26 +55,23 @@ function CampDetail({ camp, onBack }) {
 
     if (voucher) {
       try {
-        const updated = await fetch(
-          BASE_URL + GET_VOUCHER_LIST + "/" + voucher.code,
-          {
-            method: "PUT",
-            mode: "cors",
-            cache: "no-cache",
-            headers: {
-              "Content-Type": "application/json",
-              "X-App-Id": APP_ID,
-              "X-App-Token": APP_TOKEN
-            },
-            body: JSON.stringify({
-              metadata: {
-                got: "yes"
-              }
-            })
-          }
-        ).then(res => res.json());
+        await fetch(BASE_URL + GET_VOUCHER_LIST + "/" + voucher.code, {
+          method: "PUT",
+          mode: "cors",
+          cache: "no-cache",
+          headers: {
+            "Content-Type": "application/json",
+            "X-App-Id": APP_ID,
+            "X-App-Token": APP_TOKEN
+          },
+          body: JSON.stringify({
+            metadata: {
+              got: "yes"
+            }
+          })
+        }).then(res => res.json());
 
-        const final = await fetch(BASE_URL + CREATE_PUBLLICATION, {
+        await fetch(BASE_URL + CREATE_PUBLLICATION, {
           method: "POST",
           mode: "cors",
           cache: "no-cache",
@@ -111,6 +100,10 @@ function CampDetail({ camp, onBack }) {
     setGettingCode(false);
   };
 
+  let photoUrls = [];
+  if (camp) {
+    photoUrls = JSON.parse(camp.metadata.photo_urls);
+  }
   return (
     <div>
       {camp && (
@@ -121,17 +114,27 @@ function CampDetail({ camp, onBack }) {
       <CSSTransition in={!!camp} timeout={300} classNames="alert" unmountOnExit>
         <div>
           <div className="text-center">
-            <img
-              src={c.metadata && c.metadata.photo_url}
-              alt="cover"
-              className="ml-auto mr-auto h-full object-cover w-full"
-              style={{ maxHeight: 500 }}
-            />
+            {camp && camp.metadata.photo_urls && (
+              <Carousel style={{ overflow: "hidden" }} dots={true}>
+                {photoUrls.map(img => (
+                  <img
+                    src={img}
+                    alt="cover"
+                    className="ml-auto mr-auto object-cover h-64"
+                  />
+                ))}
+              </Carousel>
+            )}
           </div>
           <div className="p-4">
             <div className="text-lg text-left font-bold leading-tight two-lines-ellipsis">
               {c.name}
             </div>
+            {camp && (
+              <div
+                dangerouslySetInnerHTML={{ __html: camp.metadata.description }}
+              />
+            )}
             <div className="mt-2 text-left opacity-50 overflow">
               {c.vouchers_count} voucher(s).
             </div>
