@@ -47,16 +47,17 @@ function App() {
           {campaignList.map(c => (
             <div className="ml-4 mt-8 border shadow rounded-lg overflow-hidden">
               <div className="text-center">
-                <img
-                  onClick={() => {
-                    setShowDetail(!showDetail);
-                    setSelectedCamp(c);
-                  }}
-                  src={c.metadata && c.metadata.photo_url}
-                  alt="cover"
-                  className="ml-auto mr-auto h-full object-cover"
-                  style={{ height: 160 }}
-                />
+                <div className="img-wrapper overflow-hidden" style={{ maxHeight: 160 }}>
+                  <img
+                    onClick={() => {
+                      setShowDetail(!showDetail);
+                      setSelectedCamp(c);
+                    }}
+                    src={c.metadata && c.metadata.photo_url}
+                    alt="cover"
+                    className="ml-auto mr-auto object-cover w-full"
+                  />
+                </div>
               </div>
               <div className="p-4">
                 <div className="text-left font-bold leading-tight two-lines-ellipsis">
