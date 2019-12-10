@@ -43,9 +43,9 @@ function App() {
   return (
     <div>
       {!showDetail && (
-        <div className="p-4 flex">
+        <div className="p-4">
           {campaignList.map(c => (
-            <div className="ml-4 mt-8 border shadow rounded-lg flex-col w-0 flex-1 overflow-hidden">
+            <div className="ml-4 mt-8 border shadow rounded-lg overflow-hidden">
               <div className="text-center">
                 <img
                   onClick={() => {

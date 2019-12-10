@@ -14,6 +14,7 @@ import {
   GET_VOUCHER_LIST
 } from "./config";
 import uuid from "uuid";
+import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
 const v = {
   category: "New voucher",
@@ -25,13 +26,21 @@ const v = {
     quantity: 1
   }
 };
+
 function CampDetail({ camp, onBack }) {
   const [gettingCode, setGettingCode] = React.useState(false);
-  const [showCode, setShowCode] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
+  const [code, setCode] = React.useState(null);
   const [modalMessage, setModalMessage] = React.useState("");
 
   const c = camp || {};
   const getCode = async () => {
+    const code = localStorage.getItem(camp.name);
+    if (code) {
+      setCode(code);
+      return;
+    }
     setGettingCode(true);
     const nunu =
       "%5Bfilters%5D%5Bmetadata.got%5D%5Bconditions%5D%5B$is_unknown%5D=true";
@@ -89,15 +98,16 @@ function CampDetail({ camp, onBack }) {
             voucher: voucher.code
           })
         }).then(res => res.json());
-        console.log(updated, final);
-        setModalMessage(voucher.code);
+        setCode(voucher.code);
+        localStorage.setItem(camp.name, voucher.code);
       } catch {
+        setShowModal(true);
         setModalMessage("Something went wrong.");
       }
     } else {
+      setShowModal(true);
       setModalMessage("No voucher left.");
     }
-    setShowCode(true);
     setGettingCode(false);
   };
 
@@ -128,7 +138,7 @@ function CampDetail({ camp, onBack }) {
           </div>
         </div>
       </CSSTransition>
-      {camp && (
+      {camp && !code && (
         <button
           className="fixed border shadow p-4 rounded bg-green-500 text-white mt-16"
           style={{
@@ -156,11 +166,37 @@ function CampDetail({ camp, onBack }) {
           )}
         </button>
       )}
+      {code && (
+        <div
+          className="fixed text-center"
+          style={{
+            bottom: 8,
+            left: 8,
+            right: 8,
+            transition: "opacity",
+            width: "calc(100% - 16px)",
+            height: 60
+          }}
+        >
+          <div className="w-32 border rounded inline-block p-4">
+            <b>{code}</b>
+          </div>
+          <CopyToClipboard text={code} onCopy={() => setCopied(true)}>
+            <button className="w-24 border rounded inline-block p-4 bg-gray-300 text-center">
+              {copied ? (
+                <span className="text-green-500">Copied!</span>
+              ) : (
+                <span>Copy</span>
+              )}
+            </button>
+          </CopyToClipboard>
+        </div>
+      )}
       <Modal
-        visible={showCode}
+        visible={showModal}
         footer={null}
         width={"50%"}
-        onCancel={() => setShowCode(false)}
+        onCancel={() => setShowModal(false)}
       >
         <b>{modalMessage}</b>
       </Modal>
