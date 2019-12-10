@@ -7,6 +7,17 @@ import "tailwindcss/dist/tailwind.css";
 import carousellLogo from "./logo.png";
 import CampDetail from "./CampDetail";
 import { APP_ID, APP_TOKEN, BASE_URL, GET_CAMPAIGN_LIST } from "./config";
+import { Switch, Route, Link, BrowserRouter as Router } from "react-router-dom";
+
+const processCampainData = camp => {
+  try {
+    camp.metadata.photo_urls = JSON.parse(camp.metadata.photo_urls);
+  } catch (e) {
+    console.log(e);
+    camp.metadata.photo_urls = [];
+  }
+  return camp;
+};
 
 function App() {
   const [campaignList, setCampaignList] = React.useState(null);
@@ -25,7 +36,9 @@ function App() {
       }
     })
       .then(res => res.json())
-      .then(data => setCampaignList(data.campaigns));
+      .then(data =>
+        setCampaignList(data.campaigns.map(c => processCampainData(c)))
+      );
   }, []);
 
   const onBack = () => {
@@ -50,45 +63,47 @@ function App() {
           </a>
         </nav>
       </header>
-      {!showDetail && (
-        <div className="p-2 mt-16">
-          {campaignList.map((c, i) => (
-            <div
-              className={`border shadow rounded-lg overflow-hidden ${
-                i === 0 ? "mt-0" : "mt-8"
-              }`}
-            >
-              <div className="text-center">
-                <div
-                  className="img-wrapper overflow-hidden"
-                  style={{ maxHeight: 160 }}
-                >
-                  <img
-                    onClick={() => {
-                      setShowDetail(!showDetail);
-                      setSelectedCamp(c);
-                    }}
-                    src={c.metadata && c.metadata.photo_url}
-                    alt="cover"
-                    className="ml-auto mr-auto object-cover w-full"
-                  />
-                </div>
-              </div>
-              <div className="p-4">
-                <div className="text-left font-bold leading-tight two-lines-ellipsis">
-                  {c.name}
-                </div>
-                <div className="mt-2 text-left opacity-50 overflow">
-                  {c.vouchers_count} voucher(s).
-                </div>
-              </div>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <div className="p-2 mt-16">
+              {campaignList.map((c, i) => (
+                <Link to={`/campaign/${encodeURI(c.name)}`}>
+                  <div
+                    className={`border-2 shadow rounded-lg overflow-hidden ${
+                      i === 0 ? "mt-0" : "mt-2"
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div
+                        className="img-wrapper overflow-hidden"
+                        style={{ maxHeight: 160 }}
+                      >
+                        <img
+                          src={c.metadata && c.metadata.photo_urls[0]}
+                          alt="cover"
+                          className="ml-auto mr-auto object-cover w-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-left font-bold leading-tight two-lines-ellipsis">
+                        {c.name}
+                      </div>
+                      <div className="mt-2 text-left opacity-50 overflow">
+                        {c.vouchers_count} voucher(s).
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
-      <div className="mt-16">
-        <CampDetail camp={selectedCamp} onBack={onBack} />
-      </div>
+          </Route>
+          <Route path="/campaign/:name">
+            <CampDetail />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
