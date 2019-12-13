@@ -8,3 +8,4 @@ export const GET_VOUCHER_LIST = "/v1/vouchers";
 export const CREATE_CUSTOMER = "/v1/customers";
 export const CREATE_PUBLLICATION = "/v1/publications";
 export const REDEEM = "/v1/vouchers/{code}/redemption";
+export const CUSTOMER_ENDPOINT = "/v1/customers";

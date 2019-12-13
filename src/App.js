@@ -51,7 +51,7 @@ function App() {
     <div>
       <header data-reactid="3">
         <nav className="fixed top-0 left-0 right-0 h-16 border-b p-4 index z-50 bg-white">
-          <a href="http://carousell.com">
+          <a href="/#">
             <img src={carousellLogo} alt="logo" className="h-full" />
           </a>
         </nav>
@@ -61,7 +61,7 @@ function App() {
           <Route exact path="/">
             <div className="p-2 mt-16 mb-16">
               {campaignList.map((c, i) => (
-                <Link to={`/campaign/${encodeURI(c.name)}`} key={c.id}>
+                <Link to={`/campaign/${encodeURI(c.id)}`} key={c.id}>
                   <div
                     className={`border-2 shadow rounded-lg overflow-hidden text-black ${
                       i === 0 ? "mt-0" : "mt-2"

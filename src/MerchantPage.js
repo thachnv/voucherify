@@ -8,7 +8,13 @@ import Button from "antd/lib/button";
 import "antd/lib/button/style/css";
 import Modal from "antd/lib/modal";
 import "antd/lib/modal/style/css";
-import { APP_ID, APP_TOKEN, BASE_URL, REDEEM } from "./config";
+import {
+  APP_ID,
+  APP_TOKEN,
+  BASE_URL,
+  CUSTOMER_ENDPOINT,
+  REDEEM
+} from "./config";
 import Icon from "antd/lib/icon";
 import Spin from "antd/lib/spin";
 
@@ -17,8 +23,45 @@ function MerchantPage() {
   const [code, setCode] = React.useState("");
   const [merchantId, setMerchantId] = React.useState("");
 
-  const redeem = () => {
+  const redeem = async () => {
     setLoading(true);
+    // validate the merchant
+    const data = await fetch(BASE_URL + CUSTOMER_ENDPOINT + "/" + merchantId, {
+      method: "GET",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+        "X-App-Id": APP_ID,
+        "X-App-Token": APP_TOKEN
+      }
+    }).then(res => res.json());
+
+    if (!data.id) {
+      if (data.key === "resource_not_found") {
+        Modal.error({
+          title: "Merchant does not exist!",
+          content: "Merchant does not exist!"
+        });
+      } else {
+        Modal.error({
+          title: "Cannot verify merchant!",
+          content: "Error happen when verify this merchant!"
+        });
+      }
+      setLoading(false);
+      return;
+    }
+
+    if (!data.metadata.is_merchant) {
+      Modal.error({
+        title: "This user is not a merchant!",
+        content: "This user is not a merchant!"
+      });
+      setLoading(false);
+      return;
+    }
+
     fetch(BASE_URL + REDEEM.replace("{code}", code), {
       method: "POST",
       mode: "cors",
