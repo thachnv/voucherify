@@ -53,14 +53,14 @@ function MerchantPage() {
       return;
     }
 
-    if (!data.metadata.is_merchant) {
-      Modal.error({
-        title: "This user is not a merchant!",
-        content: "This user is not a merchant!"
-      });
-      setLoading(false);
-      return;
-    }
+    // if (!data.metadata.is_merchant) {
+    //   Modal.error({
+    //     title: "This user is not a merchant!",
+    //     content: "This user is not a merchant!"
+    //   });
+    //   setLoading(false);
+    //   return;
+    // }
 
     fetch(BASE_URL + REDEEM.replace("{code}", code), {
       method: "POST",

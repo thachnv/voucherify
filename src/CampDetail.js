@@ -48,7 +48,7 @@ function CampDetail({}) {
 
   const c = camp || {};
   const getCode = async () => {
-    const code = localStorage.getItem(camp.name);
+    const code = localStorage.getItem(camp.id);
     if (code) {
       setCode(code);
       return;
@@ -57,7 +57,7 @@ function CampDetail({}) {
     const nunu =
       "%5Bfilters%5D%5Bmetadata.got%5D%5Bconditions%5D%5B$is_unknown%5D=true";
 
-    const query = `?limit=100&campaign=${camp.name}&${nunu}`;
+    const query = `?limit=100&campaign=${camp.id}&${nunu}`;
     const voucher = await fetch(BASE_URL + GET_VOUCHER_LIST + query, {
       method: "GET",
       mode: "cors",
@@ -108,7 +108,7 @@ function CampDetail({}) {
           })
         }).then(res => res.json());
         setCode(voucher.code);
-        localStorage.setItem(camp.name, voucher.code);
+        localStorage.setItem(camp.id, voucher.code);
       } catch {
         setShowModal(true);
         setModalMessage("Something went wrong.");
@@ -139,7 +139,7 @@ function CampDetail({}) {
                 <img
                   src={img}
                   alt="cover"
-                  className="ml-auto mr-auto object-cover h-64"
+                  className="ml-auto mr-auto object-cover w-full"
                 />
               ))}
             </Carousel>
@@ -147,7 +147,7 @@ function CampDetail({}) {
         </div>
         <div className="p-4">
           <div className="text-lg text-left font-bold leading-tight two-lines-ellipsis">
-            {c.name}
+            {c.metadata.title || c.name}
           </div>
           {camp && (
             <div

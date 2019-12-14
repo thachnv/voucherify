@@ -81,7 +81,7 @@ function App() {
                     </div>
                     <div className="p-4">
                       <div className="text-left font-bold leading-tight two-lines-ellipsis">
-                        {c.name}
+                        {c.metadata.title || c.name}
                       </div>
                       <div className="mt-2 text-left opacity-50 overflow">
                         {c.vouchers_count} voucher(s).
