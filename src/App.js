@@ -48,7 +48,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="max-w-2xl mr-auto ml-auto">
       <header data-reactid="3">
         <nav className="fixed top-0 left-0 right-0 h-16 border-b p-4 index z-50 bg-white">
           <a href="/#">

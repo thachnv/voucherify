@@ -1,5 +1,4 @@
 import React from "react";
-import { CSSTransition } from "react-transition-group";
 import Modal from "antd/lib/modal";
 import "antd/lib/modal/style/css";
 import Spin from "antd/lib/spin";
@@ -21,11 +20,10 @@ import {
 import uuid from "uuid";
 import { CopyToClipboard } from "react-copy-to-clipboard/lib/Component";
 
-function CampDetail({}) {
+function CampDetail() {
   const [gettingCode, setGettingCode] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
-  const [code, setCode] = React.useState(null);
   const [modalMessage, setModalMessage] = React.useState("");
   const [camp, setCamp] = React.useState(null);
 
@@ -44,35 +42,45 @@ function CampDetail({}) {
     })
       .then(res => res.json())
       .then(data => setCamp(data));
-  }, []);
+  }, [name]);
 
   const c = camp || {};
   const getCode = async () => {
     const code = localStorage.getItem(camp.id);
-    if (code) {
-      setCode(code);
-      return;
-    }
+    let voucher;
     setGettingCode(true);
-    const nunu =
-      "%5Bfilters%5D%5Bmetadata.got%5D%5Bconditions%5D%5B$is_unknown%5D=true";
+    if (code) {
+      voucher = await fetch(BASE_URL + GET_VOUCHER_LIST + "/" + code, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/json",
+          "X-App-Id": APP_ID,
+          "X-App-Token": APP_TOKEN
+        }
+      }).then(res => res.json());
+    } else {
+      const nunu =
+        "%5Bfilters%5D%5Bjunction%5D=and&%5Bfilters%5D%5Bmetadata.got%5D%5Bconditions%5D%5B$is_unknown%5D=true";
 
-    const query = `?limit=100&campaign=${camp.id}&${nunu}`;
-    const voucher = await fetch(BASE_URL + GET_VOUCHER_LIST + query, {
-      method: "GET",
-      mode: "cors",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "application/json",
-        "X-App-Id": APP_ID,
-        "X-App-Token": APP_TOKEN
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        return data.vouchers.find(v => v.publish.count === 0);
-      });
-
+      const query = `?limit=100&campaign=${camp.name}&${nunu}`;
+      // const query = `?limit=100&campaign=${camp.id}`;
+      voucher = await fetch(BASE_URL + GET_VOUCHER_LIST + query, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/json",
+          "X-App-Id": APP_ID,
+          "X-App-Token": APP_TOKEN
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          return data.vouchers.find(v => v.publish.count === 0);
+        });
+    }
     if (voucher) {
       try {
         await fetch(BASE_URL + GET_VOUCHER_LIST + "/" + voucher.code, {
@@ -107,17 +115,47 @@ function CampDetail({}) {
             voucher: voucher.code
           })
         }).then(res => res.json());
-        setCode(voucher.code);
         localStorage.setItem(camp.id, voucher.code);
       } catch {
         setShowModal(true);
+        setGettingCode(false);
         setModalMessage("Something went wrong.");
       }
     } else {
       setShowModal(true);
+      setGettingCode(false);
       setModalMessage("No voucher left.");
     }
-    setGettingCode(false);
+    if (voucher) {
+      setGettingCode(false);
+      Modal.info({
+        icon: null,
+        title: (
+          <div className="text-center">"Your voucher has been generated!"</div>
+        ),
+        content: (
+          <div className="text-center">
+            <img
+              alt="qr code"
+              className="inline-block"
+              src={voucher.assets.qr.url}
+            />
+            <div className="text-3xl font-bold">{voucher.code}</div>
+            <CopyToClipboard text={voucher.code} onCopy={() => setCopied(true)}>
+              <button className="w-24 border rounded inline-block p-4 bg-gray-300 text-center">
+                {copied ? (
+                  <span className="text-green-500">Copied!</span>
+                ) : (
+                  <span>Copy</span>
+                )}
+              </button>
+            </CopyToClipboard>
+          </div>
+        ),
+        okText: "OK",
+        cancelText: "No"
+      });
+    }
   };
 
   if (!camp) {
@@ -159,7 +197,7 @@ function CampDetail({}) {
           </div>
         </div>
       </div>
-      {camp && !code && (
+      {
         <button
           className="fixed border shadow p-4 rounded bg-green-500 text-white mt-16"
           style={{
@@ -186,33 +224,33 @@ function CampDetail({}) {
             <span className="font-bold">Get Code</span>
           )}
         </button>
-      )}
-      {camp && code && (
-        <div
-          className="fixed text-center"
-          style={{
-            bottom: 8,
-            left: 8,
-            right: 8,
-            transition: "opacity",
-            width: "calc(100% - 16px)",
-            height: 60
-          }}
-        >
-          <div className="w-32 border rounded inline-block p-4">
-            <b>{code}</b>
-          </div>
-          <CopyToClipboard text={code} onCopy={() => setCopied(true)}>
-            <button className="w-24 border rounded inline-block p-4 bg-gray-300 text-center">
-              {copied ? (
-                <span className="text-green-500">Copied!</span>
-              ) : (
-                <span>Copy</span>
-              )}
-            </button>
-          </CopyToClipboard>
-        </div>
-      )}
+      }
+      {/*{camp && code && (*/}
+      {/*  <div*/}
+      {/*    className="fixed text-center"*/}
+      {/*    style={{*/}
+      {/*      bottom: 8,*/}
+      {/*      left: 8,*/}
+      {/*      right: 8,*/}
+      {/*      transition: "opacity",*/}
+      {/*      width: "calc(100% - 16px)",*/}
+      {/*      height: 60*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    <div className="w-32 border rounded inline-block p-4">*/}
+      {/*      <b>{code}</b>*/}
+      {/*    </div>*/}
+      {/*    <CopyToClipboard text={code} onCopy={() => setCopied(true)}>*/}
+      {/*      <button className="w-24 border rounded inline-block p-4 bg-gray-300 text-center">*/}
+      {/*        {copied ? (*/}
+      {/*          <span className="text-green-500">Copied!</span>*/}
+      {/*        ) : (*/}
+      {/*          <span>Copy</span>*/}
+      {/*        )}*/}
+      {/*      </button>*/}
+      {/*    </CopyToClipboard>*/}
+      {/*  </div>*/}
+      {/*)}*/}
       <Modal
         visible={showModal}
         footer={null}
