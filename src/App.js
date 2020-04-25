@@ -11,6 +11,7 @@ import { Switch, Route, Link, HashRouter as Router } from "react-router-dom";
 import MerchantPage from "./MerchantPage";
 
 const processCampainData = camp => {
+  if (!camp || !camp.metadata) return camp;
   try {
     camp.metadata.photo_urls = JSON.parse(camp.metadata.photo_urls);
   } catch (e) {
@@ -81,10 +82,10 @@ function App() {
                     </div>
                     <div className="p-4">
                       <div className="text-left font-bold leading-tight two-lines-ellipsis">
-                        {c.metadata.title || c.name}
+                        {(c.metadata && c.metadata.title) || c.name}
                       </div>
                       <div className="mt-2 text-left opacity-50 overflow">
-                        {c.vouchers_count} voucher(s).
+                        {c.metadata && c.metadata.short_desc}
                       </div>
                     </div>
                   </div>

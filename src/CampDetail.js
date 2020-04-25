@@ -169,7 +169,7 @@ function CampDetail() {
   const photoUrls = JSON.parse(camp.metadata.photo_urls);
   return (
     <div className="mt-16">
-      <div className="pt-1">
+      <div className="pt-1 mb-16">
         <div className="m-2 border rounded overflow-hidden text-center ">
           {camp && camp.metadata.photo_urls && (
             <Carousel style={{ overflow: "hidden" }} dots={true}>
@@ -193,7 +193,7 @@ function CampDetail() {
             />
           )}
           <div className="mt-2 text-left opacity-50 overflow">
-            {c.vouchers_count} voucher(s).
+            {c.metadata && c.metadata.short_desc}
           </div>
         </div>
       </div>
