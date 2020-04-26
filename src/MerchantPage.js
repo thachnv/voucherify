@@ -212,7 +212,7 @@ function MerchantPage() {
           />
         </div>
         <div className="w-1/4 inline-block">
-          <Button type="primary" onClick={redeem}>
+          <Button type="primary" onClick={() => redeem(code)}>
             {loading ? (
               <Spin
                 indicator={
